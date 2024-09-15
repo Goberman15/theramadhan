@@ -16,10 +16,18 @@ export default defineConfig({
       [wikiLinkPlugin, {
         permalinks,
         aliasDivider: '|',
+        /**
+         * @param {string} pageName
+         * @returns {string[]}
+         */
         pageResolver: (pageName) => {
-          const permalink = permalinks.find(p => p === pageName || p.endsWith(pageName))
+          const permalink = permalinks.find(p => p === pageName || p.endsWith(pageName)) || ""
           return [permalink]
         },
+        /**
+         * @param {string} permalink
+         * @returns {string}
+         */
         hrefTemplate: (permalink) => {
           return "/" + permalink.replace(/^index|src\/content\/|\/index$/, '')
         }
