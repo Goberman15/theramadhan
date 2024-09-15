@@ -21,7 +21,6 @@ export default defineConfig({
           return [permalink]
         },
         hrefTemplate: (permalink) => {
-          console.log({ permalink })
           return "/" + permalink.replace(/^index|src\/content\/|\/index$/, '')
         }
       }],
