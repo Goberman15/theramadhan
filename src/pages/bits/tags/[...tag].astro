@@ -1,0 +1,37 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import BlogPostPreview from '../../../components/BlogPostPreview.astro';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('bits');
+    const tags = new Set();
+    
+    posts.forEach((post: any) => {
+        post.data.tags.forEach((tag: string) => tags.add(tag));
+    });
+
+    return Array.from(tags).map((tag) => ({
+        params: { tag },
+        props: { 
+            posts: posts.filter((post: CollectionEntry<'bits'>) => post.data.tags.includes(tag)),
+         },
+    }));
+}
+
+type Props = {
+    posts: CollectionEntry<'bits'>[];
+}
+
+const { posts } = Astro.props;
+---
+<Layout title="Bits - Akbar Ramadhan">
+    <div class="mx-auto px-4 py-8 w-full max-w-screen-md">
+        <h1 class="text-4xl font-bold mb-8">Blog Posts</h1>
+        <div class="space-y-6">
+        {posts.map((post: CollectionEntry<'bits'>) => (
+            <BlogPostPreview post={post} />
+        ))}
+        </div>
+    </div>
+</Layout>
