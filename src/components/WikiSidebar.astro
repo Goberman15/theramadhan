@@ -1,0 +1,67 @@
+---
+import WikiDirectory from './WikiDirectory.astro';
+import WikiFile from './WikiFile.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const wiki: CollectionEntry<"wiki">[] = await getCollection('wiki');
+
+// type Directory = {
+//     type: 'directory',
+//     title: string,
+//     child: Record<string, File | Directory>
+// }
+
+// type File = {
+//     type: 'file',
+//     slug: string,
+//     title: string,
+// }
+
+const structure: Record<string, any> = {}
+wiki.forEach(w => {
+    const parts = w.slug.split('/');
+    
+    let current: Record<string, any> = structure;
+
+    parts.forEach((part: string, idx: number) => {
+        const isLast = idx === parts.length - 1;
+        if (!current[part]) {
+            if (isLast) {
+                current[part] = {
+                    type: 'file',
+                    slug: w.slug,
+                    title: w.data.title,
+                }
+            } else {
+                current[part] = {
+                    type: 'directory',
+                    title: part,
+                    child: {}
+                }
+            }
+        }
+
+        if (!isLast) {
+            current = current[part].child;
+        }
+    })
+})
+
+console.log(JSON.stringify(wiki, null, 2))
+---
+
+<aside class="w-64 h-[calc(100vh-64px)] overflow-y-auto border-r border-gray-700">
+    <div class="p-4">
+      <h2 class="text-xl font-semibold mb-4">Wiki Directory</h2>
+      <!-- <input type="text" placeholder="Search Bar..." class="w-full p-2 mb-4 bg-gray-800 border border-gray-700 rounded"> -->
+      <div class="space-y-2 mx-auto">
+        {Object.keys(structure).map(key => {
+            if (structure[key].type === 'directory') {
+                return <WikiDirectory title={key} child={structure[key].child} />
+            } else {
+                return <WikiFile title={structure[key].title} slug={structure[key].slug} />
+            }
+        })}
+      </div>
+    </div>
+</aside>

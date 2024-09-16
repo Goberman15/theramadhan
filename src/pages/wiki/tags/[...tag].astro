@@ -1,0 +1,38 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import WikiFile from '../../../components/WikiFile.astro';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('wiki');
+    const tags = new Set();
+    
+    posts.forEach((post: any) => {
+        post.data.tags.forEach((tag: string) => tags.add(tag));
+    });
+
+    return Array.from(tags).map((tag) => ({
+        params: { tag },
+        props: { 
+            wikis: posts.filter((post: CollectionEntry<'wiki'>) => post.data.tags.includes(tag)),
+         },
+    }));
+}
+
+type Props = {
+    wikis: CollectionEntry<'wiki'>[];
+}
+
+const { tag } = Astro.params;
+const { wikis } = Astro.props;
+---
+<Layout title="Wiki - Akbar Ramadhan">
+    <div class="mx-auto px-4 py-8 w-full max-w-screen-md">
+        <h1 class="text-4xl font-bold mb-8">Wiki Notes - #{tag}</h1>
+        <div class="flex flex-col gap-4">
+        {wikis.map((wiki: CollectionEntry<'wiki'>) => (
+            <WikiFile title={`${wiki.data.title} - ${wiki.slug}`} slug={wiki.slug} />
+        ))}
+        </div>
+    </div>
+</Layout>

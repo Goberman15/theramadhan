@@ -1,0 +1,52 @@
+---
+import { Icon } from 'astro-icon/components'
+import WikiFile from './WikiFile.astro';
+
+interface Props {
+    title: string;
+    child: Record<string, any>
+}
+
+const { title, child } = Astro.props;
+---
+
+<div>
+    <div class="wiki-directory-title flex items-center cursor-pointer hover:text-gray-300">
+        <Icon name="mdi:chevron-right" class="chevron-right" />
+        <Icon name="mdi:chevron-down" class="chevron-down hidden" />
+        <p class="text-lg font-bold ml-2">{title}</p>
+    </div>
+    <div class="wiki-directory-content flex flex-col gap-1 ml-6 hidden">
+        {Object.keys(child).map(key => {
+            if (child[key].type === 'file') {
+                return <WikiFile title={child[key].title} slug={child[key].slug} />
+            } else {
+                return <Astro.self title={child[key].title} child={child[key].child} />
+            }
+        })}
+    </div>
+</div>
+
+<script>
+    const toggleDirectory = (title: Element) => {
+        const directoryContent = title.nextElementSibling;
+        const chevronRight = title.querySelector('.chevron-right');
+        const chevronDown = title.querySelector('.chevron-down');
+
+        if (directoryContent!.classList.contains('hidden')) {
+            directoryContent!.classList.remove('hidden');
+            chevronRight!.classList.add('hidden');
+            chevronDown!.classList.remove('hidden');
+        } else {
+            directoryContent!.classList.add('hidden');
+            chevronRight!.classList.remove('hidden');
+            chevronDown!.classList.add('hidden');
+        }
+    }
+
+    document.querySelectorAll('.wiki-directory-title').forEach(title => {
+        title.addEventListener('click', () => {
+            toggleDirectory(title);
+        });
+    });
+</script>

@@ -1,0 +1,21 @@
+---
+import Tag from '../../components/Tag.astro';
+import Wiki from '../../layouts/Wiki.astro';
+---
+
+<Wiki title="Wiki">
+    <div class="flex flex-col">
+        <h1 class="text-4xl text-center font-bold mb-8">Wiki</h1>
+        <p class="text-center">This is a collection of my notes and thoughts.</p>
+        <p class="text-center">I add this part of my site to document what I learn.</p>
+        <p class="text-center mb-6">I always tried to add only things that I already understand.</p>
+    </div>
+    <section class="mb-6">
+        <h2 class="text-2xl text-center font-bold mb-2">Tags</h2>
+        <div class="flex space-x-4 justify-center">
+            <Tag tag="Tag1" href="#tag1" />
+            <Tag tag="Tag2" href="#tag2" />
+            <Tag tag="Tag3" href="#tag3" />
+        </div>
+    </section>
+</Wiki>

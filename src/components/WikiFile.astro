@@ -1,0 +1,10 @@
+---
+interface Props {
+    title: string;
+    slug: string;
+}
+
+const { title, slug } = Astro.props;
+---
+
+<a href={`/wiki/${slug}`} class="text-gray-300 hover:text-gray-100">{title}</a>

@@ -1,0 +1,30 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import Tag from './Tag.astro';  
+
+interface Props {
+    title: string;
+    date: Date;
+    tags: string[];
+    readingTime?: string;
+    type: 'bits' | 'wiki';
+    proseSize: 'lg' | 'md' | 'sm';
+}
+
+const { title, date, tags, readingTime, type, proseSize } = Astro.props as Props;
+---
+
+<div class="mx-auto px-4 py-8 w-full max-w-screen-md">
+    <div class="flex flex-col items-center justify-center mb-8">
+        <p class="text-5xl font-bold mb-2">{title}</p>
+        <div class="text-sm text-gray-500 mb-2"><FormattedDate date={date} /> {readingTime ? `| ${readingTime} minutes read` : ''}</div>
+        <div class="flex space-x-4 justify-center mb-2">
+            {tags.map((tag: string) => (
+                <Tag tag={tag} href={`/${type}/tags/${tag}`} />
+            ))}
+        </div>
+    </div>
+    <article class={`prose prose-invert prose-${proseSize} max-w-none text-justify`}>
+        <slot />
+    </article>
+</div>

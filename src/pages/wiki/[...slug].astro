@@ -1,0 +1,28 @@
+---
+import Wiki from '../../layouts/Wiki.astro'
+import Content from '../../components/Content.astro'
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+    const wikis = await getCollection('wiki');
+    return wikis.map((wiki: any) => ({
+        params: { slug: wiki.slug },
+        props: { wiki },
+    }));
+}
+
+type Props = CollectionEntry<'wiki'>;
+const wiki = Astro.props.wiki;
+const { Content: RenderedContent } = await wiki.render();
+---
+
+<Wiki title={wiki.data.title}>
+    <Content 
+        title={wiki.data.title} 
+        date={new Date(wiki.data.date)} 
+        tags={wiki.data.tags} 
+        type="wiki" 
+        proseSize="md">
+            <RenderedContent />
+    </Content>
+</Wiki>
