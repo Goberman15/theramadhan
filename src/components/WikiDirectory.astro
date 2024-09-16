@@ -44,9 +44,11 @@ const { title, child } = Astro.props;
         }
     }
 
-    document.querySelectorAll('.wiki-directory-title').forEach(title => {
-        title.addEventListener('click', () => {
-            toggleDirectory(title);
+    document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll('.wiki-directory-title').forEach(title => {
+            title.addEventListener('click', () => {
+                toggleDirectory(title);
+            });
         });
     });
 </script>
