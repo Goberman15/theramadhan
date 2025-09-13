@@ -7,4 +7,4 @@ type Props = {
 const { tag, href } = Astro.props;
 ---
 
-<a href={href} class="text-sm text-gray-400 bg-gray-800 rounded-md p-1 hover:text-white hover:bg-gray-700">#{tag}</a>
+<a href={href} class="inline-block text-sm text-gray-400 bg-gray-800 hover:bg-gray-700 hover:text-gray-200 rounded-full px-3 py-1 transition-colors duration-200 border border-gray-700">#{tag}</a>

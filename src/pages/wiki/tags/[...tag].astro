@@ -1,17 +1,17 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import Tag from '../../../components/Tag.astro';
 import Layout from '../../../layouts/Layout.astro';
-import WikiFile from '../../../components/WikiFile.astro';
 
 export async function getStaticPaths() {
     const posts = await getCollection('wiki');
-    const tags = new Set();
+    const tags = new Set<string>();
     
     posts.forEach((post: any) => {
         post.data.tags.forEach((tag: string) => tags.add(tag));
     });
 
-    return Array.from(tags).map((tag) => ({
+    return Array.from(tags).map((tag: string) => ({
         params: { tag },
         props: { 
             wikis: posts.filter((post: CollectionEntry<'wiki'>) => post.data.tags.includes(tag)),
@@ -26,13 +26,52 @@ type Props = {
 const { tag } = Astro.params;
 const { wikis } = Astro.props;
 ---
-<Layout title="Wiki - Akbar Ramadhan">
-    <div class="mx-auto px-4 py-8 w-full max-w-screen-md">
-        <h1 class="text-4xl font-bold mb-8">Wiki Notes - #{tag}</h1>
-        <div class="flex flex-col gap-4">
-        {wikis.map((wiki: CollectionEntry<'wiki'>) => (
-            <WikiFile title={`${wiki.data.title} - ${wiki.slug}`} slug={wiki.slug} />
-        ))}
+<Layout title={`${tag} - Wiki | Akbar Ramadhan`} description={`Wiki articles about ${tag}. Technical notes and learnings on ${tag} from Akbar Ramadhan's knowledge base.`}>
+    <div class="mx-auto px-4 py-16 w-full max-w-4xl">
+        <div class="text-center mb-12">
+            <div class="mb-4">
+                <Tag tag={tag as string} href={`/wiki/tags/${tag}`} />
+            </div>
+            <h1 class="text-4xl font-bold mb-4 text-gray-50">Wiki Articles</h1>
+            <p class="text-xl text-gray-400">
+                {wikis.length} article{wikis.length !== 1 ? 's' : ''} about <span class="text-blue-400 font-semibold">{tag}</span>
+            </p>
+            <div class="mt-6">
+                <a href="/wiki" class="text-gray-400 hover:text-blue-400 transition-colors duration-200">
+                    ← Back to Wiki
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid gap-6 md:gap-8">
+            {wikis.map((wiki: CollectionEntry<'wiki'>) => (
+                <article class="bg-gray-900/30 border border-gray-800 rounded-lg p-6 hover:border-blue-500/30 hover:bg-gray-900/50 transition-all duration-200">
+                    <h2 class="text-xl font-semibold mb-3">
+                        <a href={`/wiki/${wiki.slug}`} 
+                           class="text-gray-50 hover:text-blue-400 transition-colors duration-200">
+                            {wiki.data.title}
+                        </a>
+                    </h2>
+                    <div class="flex items-center text-gray-500 text-sm mb-3">
+                        <time>{new Date(wiki.data.date).toLocaleDateString()}</time>
+                        {wiki.data.tags && wiki.data.tags.length > 1 && (
+                            <div class="ml-4 flex gap-2">
+                                {wiki.data.tags.filter((t: string) => t !== tag).slice(0, 3).map((relatedTag: string) => (
+                                    <a href={`/wiki/tags/${relatedTag}`} 
+                                       class="text-xs text-gray-500 hover:text-blue-400 transition-colors">
+                                        #{relatedTag}
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    {wiki.data.description && (
+                        <p class="text-gray-300 leading-relaxed">
+                            {wiki.data.description}
+                        </p>
+                    )}
+                </article>
+            ))}
         </div>
     </div>
 </Layout>

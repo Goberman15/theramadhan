@@ -1,18 +1,30 @@
 ---
-import Layout from "./Layout.astro";
 import WikiContent from "../components/WikiContent.astro";
 import WikiSidebar from "../components/WikiSidebar.astro";
+import Layout from "./Layout.astro";
 
 interface Props {
     title: string;
+    description?: string;
+    publishedTime?: string;
+    modifiedTime?: string;
+    tags?: string[];
+    currentSlug?: string;
 }
 
-const { title }: Props = Astro.props;
+const { title, description, publishedTime, modifiedTime, tags, currentSlug }: Props = Astro.props;
 ---
 
-<Layout title={title}>
+<Layout 
+    title={title}
+    description={description}
+    type="article"
+    publishedTime={publishedTime}
+    modifiedTime={modifiedTime}
+    tags={tags}
+>
     <div class="flex">
-        <WikiSidebar />
+        <WikiSidebar currentSlug={currentSlug} />
         <WikiContent>
             <slot />
         </WikiContent>

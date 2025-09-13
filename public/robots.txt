@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://theramadhan.dev/sitemap-index.xml
+
+# Disallow tag pages from being crawled too aggressively
+User-agent: *
+Crawl-delay: 1
+
+# Allow all search engines to crawl the main content
+Allow: /blog
+Allow: /wiki
+Allow: /blog/*
+Allow: /wiki/*
+
+# Optimize crawling for important pages
+Allow: /

@@ -12,6 +12,9 @@ const icons = {
 };
 ---
 
-<a href={href} target="_blank" rel="noopener noreferrer" class="inline-block p-2 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors">
-	<span set:html={icons[icon]} />
+<a href={href} 
+   target="_blank" 
+   rel="noopener noreferrer" 
+   class="inline-flex items-center justify-center w-14 h-14 bg-gray-900/50 border border-gray-700 rounded-full hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-400 transition-all duration-200 group">
+	<span set:html={icons[icon]} class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
 </a>

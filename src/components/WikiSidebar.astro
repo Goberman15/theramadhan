@@ -1,8 +1,13 @@
 ---
+import { getCollection, type CollectionEntry } from 'astro:content';
 import WikiDirectory from './WikiDirectory.astro';
 import WikiFile from './WikiFile.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
 
+interface Props {
+    currentSlug?: string;
+}
+
+const { currentSlug } = Astro.props;
 const wiki: CollectionEntry<"wiki">[] = await getCollection('wiki');
 
 const structure: Record<string, any> = {}
@@ -36,17 +41,23 @@ wiki.forEach(w => {
 })
 ---
 
-<aside class="w-64 h-[calc(100vh-64px)] overflow-y-auto border-r border-gray-700">
-    <div class="p-4">
-      <h2 class="text-xl font-semibold mb-4">Wiki Directory</h2>
-      <div class="space-y-2 mx-auto">
-        {Object.keys(structure).map(key => {
-            if (structure[key].type === 'directory') {
-                return <WikiDirectory title={key} child={structure[key].child} />
-            } else {
-                return <WikiFile title={structure[key].title} slug={structure[key].slug} />
-            }
-        })}
-      </div>
+<aside class="w-80 h-[calc(100vh-80px)] overflow-y-auto border-r border-gray-800 bg-gray-950/30">
+    <div class="p-6">
+        <h2 class="text-lg font-semibold text-gray-50 mb-6 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+            Wiki Directory
+        </h2>
+        
+        <nav class="space-y-1">
+            {Object.keys(structure).map(key => {
+                if (structure[key].type === 'directory') {
+                    return <WikiDirectory title={key} child={structure[key].child} currentSlug={currentSlug} />
+                } else {
+                    return <WikiFile title={structure[key].title} slug={structure[key].slug} currentSlug={currentSlug} />
+                }
+            })}
+        </nav>
     </div>
 </aside>

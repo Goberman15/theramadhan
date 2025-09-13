@@ -5,13 +5,13 @@ import BlogPostPreview from '../../../components/BlogPostPreview.astro';
 
 export async function getStaticPaths() {
     const posts = await getCollection('bits');
-    const tags = new Set();
+    const tags = new Set<string>();
     
     posts.forEach((post: any) => {
         post.data.tags.forEach((tag: string) => tags.add(tag));
     });
 
-    return Array.from(tags).map((tag) => ({
+    return Array.from(tags).map((tag: string) => ({
         params: { tag },
         props: { 
             posts: posts.filter((post: CollectionEntry<'bits'>) => post.data.tags.includes(tag)),

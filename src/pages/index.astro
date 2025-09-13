@@ -1,16 +1,44 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import SocialButton from '../components/SocialButton.astro';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Akbar Ramadhan">	
-		<main class="flex-1 flex flex-col items-center justify-center p-4 text-center">
-			<h1 class="text-5xl sm:text-6xl font-bold mb-4">Akbar Ramadhan</h1>
-			<h2 class="text-2xl sm:text-3xl mb-6">Backend Engineer | DevOps & Cloud Enthusiast</h2>
-			<p class="max-w-xl sm:max-w-2xl mb-8 text-lg sm:text-xl">A backend engineer with a passion for cloud infrastructure and automation. Love to build scalable and reliable systems.</p>
-			<div class="flex space-x-6">
+<Layout title="Akbar Ramadhan - Backend Engineer">	
+	<main class="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
+		<div class="max-w-4xl mx-auto space-y-8">
+			<!-- Main heading with better typography -->
+			<div class="space-y-4">
+				<h1 class="text-6xl sm:text-7xl font-bold mb-6 text-gray-50 leading-tight">
+					Akbar Ramadhan
+				</h1>
+				<h2 class="text-3xl sm:text-4xl mb-8 text-blue-400 font-semibold">
+					Backend Engineer | DevOps & Cloud Enthusiast
+				</h2>
+			</div>
+
+			<!-- Description with better typography -->
+			<p class="max-w-2xl mx-auto mb-12 text-xl sm:text-2xl text-gray-300 leading-relaxed">
+				A backend engineer with a passion for cloud infrastructure and automation. 
+				<span class="text-gray-50">Love to build scalable and reliable systems.</span>
+			</p>
+
+			<!-- Enhanced social buttons -->
+			<div class="flex justify-center space-x-8 pt-4">
 				<SocialButton href="https://github.com/goberman15" icon="github" />
 				<SocialButton href="https://linkedin.com/in/akbarramadhan" icon="linkedin" />
 			</div>
-		</main>
+
+			<!-- Quick navigation cards -->
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12 max-w-2xl mx-auto">
+				<a href="/blog" class="group p-6 bg-gray-900/50 border border-gray-800 rounded-lg hover:border-blue-500/50 hover:bg-gray-900/70 transition-all duration-200">
+					<h3 class="text-xl font-semibold text-gray-50 mb-2 group-hover:text-blue-400 transition-colors">Blog Posts</h3>
+					<p class="text-gray-400 group-hover:text-gray-300 transition-colors">Thoughts and experiences from building systems</p>
+				</a>
+				<a href="/wiki" class="group p-6 bg-gray-900/50 border border-gray-800 rounded-lg hover:border-blue-500/50 hover:bg-gray-900/70 transition-all duration-200">
+					<h3 class="text-xl font-semibold text-gray-50 mb-2 group-hover:text-blue-400 transition-colors">Knowledge Wiki</h3>
+					<p class="text-gray-400 group-hover:text-gray-300 transition-colors">Technical notes and learnings I document</p>
+				</a>
+			</div>
+		</div>
+	</main>
 </Layout>

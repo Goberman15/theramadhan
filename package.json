@@ -7,7 +7,14 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check",
+    "sync": "astro sync",
+    "build:analyze": "npm run build && npx astro-bundle-analyzer dist",
+    "lighthouse": "lighthouse http://localhost:4321 --output html --output-path ./lighthouse-report.html",
+    "format": "prettier --write . --ignore-path .gitignore",
+    "format:check": "prettier --check . --ignore-path .gitignore",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.3",
@@ -23,5 +30,10 @@
     "remark-wiki-link": "^2.0.1",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "prettier-plugin-astro": "^0.12.0",
+    "prettier-plugin-tailwindcss": "^0.5.0"
   }
 }

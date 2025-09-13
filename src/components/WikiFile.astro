@@ -2,9 +2,18 @@
 interface Props {
     title: string;
     slug: string;
+    currentSlug?: string;
 }
 
-const { title, slug } = Astro.props;
+const { title, slug, currentSlug } = Astro.props;
+const isCurrentPage = currentSlug === slug;
 ---
 
-<a href={`/wiki/${slug}`} class="text-gray-300 hover:text-gray-100">{title}</a>
+<a href={`/wiki/${slug}`} 
+   class={`block px-3 py-2 rounded transition-all duration-200 ${
+     isCurrentPage 
+       ? 'text-blue-400 bg-blue-900/30 border-l-2 border-blue-400' 
+       : 'text-gray-300 hover:text-blue-400 hover:bg-gray-800/50'
+   }`}>
+    {title}
+</a>

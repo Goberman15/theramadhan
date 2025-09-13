@@ -1,0 +1,99 @@
+---
+// Simple privacy-focused analytics component
+// You can replace this with your preferred analytics solution
+interface Props {
+  siteId?: string;
+  enableAnalytics?: boolean;
+}
+
+const { siteId, enableAnalytics = false } = Astro.props;
+---
+
+{enableAnalytics && (
+  <script is:inline define:vars={{ siteId }}>
+    // Privacy-focused analytics
+    // Simple page view tracking without cookies
+    
+    function trackPageView() {
+      const data = {
+        url: window.location.href,
+        referrer: document.referrer,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        screen: {
+          width: screen.width,
+          height: screen.height
+        }
+      };
+      
+      // You can send this to your analytics endpoint
+      console.log('Analytics:', data);
+      
+      // Example: Send to your analytics service
+      // fetch('/api/analytics', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(data)
+      // });
+    }
+
+    // Track page views on initial load and navigation
+    trackPageView();
+    
+    // Track navigation for single-page app behavior
+    let currentUrl = window.location.href;
+    
+    const observer = new MutationObserver(() => {
+      if (window.location.href !== currentUrl) {
+        currentUrl = window.location.href;
+        trackPageView();
+      }
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Performance monitoring
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const perfData = performance.getEntriesByType('navigation')[0];
+        if (perfData) {
+          console.log('Performance:', {
+            loadTime: perfData.loadEventEnd - perfData.loadEventStart,
+            domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+            firstPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-paint')?.startTime,
+            firstContentfulPaint: performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint')?.startTime,
+          });
+        }
+      }, 1000);
+    });
+  </script>
+)}
+
+<!-- Web Vitals monitoring -->
+<script is:inline>
+  // Core Web Vitals tracking
+  function vitalsCallback(metric) {
+    console.log('Web Vital:', metric);
+    
+    // You can send this to your analytics service
+    // fetch('/api/web-vitals', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(metric)
+    // });
+  }
+  
+  // Track CLS, FID, LCP
+  if ('web-vitals' in window) {
+    import('https://unpkg.com/web-vitals@3/dist/web-vitals.js').then(({ onCLS, onFID, onLCP, onFCP, onTTFB }) => {
+      onCLS(vitalsCallback);
+      onFID(vitalsCallback);
+      onLCP(vitalsCallback);
+      onFCP(vitalsCallback);
+      onTTFB(vitalsCallback);
+    });
+  }
+</script>

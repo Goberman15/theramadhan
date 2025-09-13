@@ -4,50 +4,132 @@ import WikiFile from './WikiFile.astro';
 
 interface Props {
     title: string;
-    child: Record<string, any>
+    child: Record<string, any>;
+    currentSlug?: string;
 }
 
-const { title, child } = Astro.props;
+const { title, child, currentSlug } = Astro.props;
+
+// Check if this directory or any subdirectory contains the current page
+const containsCurrentPage = (obj: Record<string, any>, slug?: string): boolean => {
+    if (!slug) return false;
+    
+    for (const key in obj) {
+        const item = obj[key];
+        if (item.type === 'file' && item.slug === slug) {
+            return true;
+        } else if (item.type === 'directory' && containsCurrentPage(item.child, slug)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+const shouldBeExpanded = containsCurrentPage(child, currentSlug);
 ---
 
-<div>
-    <div class="wiki-directory-title flex items-center cursor-pointer hover:text-gray-300">
-        <Icon name="mdi:chevron-right" class="chevron-right" />
-        <Icon name="mdi:chevron-down" class="chevron-down hidden" />
-        <p class="text-lg font-bold ml-2">{title}</p>
-    </div>
-    <div class="wiki-directory-content flex flex-col gap-1 ml-6 hidden">
+<div data-directory-name={title}>
+    <button 
+        class="wiki-directory-title flex items-center cursor-pointer hover:text-blue-400 focus:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 rounded px-2 py-1 w-full text-left transition-colors duration-200"
+        aria-expanded={shouldBeExpanded ? "true" : "false"}
+        data-should-expand={shouldBeExpanded}>
+        <Icon name="mdi:chevron-right" class={`chevron-right w-4 h-4 text-gray-400 ${shouldBeExpanded ? 'hidden' : ''}`} />
+        <Icon name="mdi:chevron-down" class={`chevron-down w-4 h-4 text-gray-400 ${shouldBeExpanded ? '' : 'hidden'}`} />
+        <span class="text-base font-semibold ml-2 text-gray-300">{title}</span>
+    </button>
+    <div class={`wiki-directory-content flex flex-col gap-2 ml-6 mt-2 ${shouldBeExpanded ? '' : 'hidden'}`}>
         {Object.keys(child).map(key => {
             if (child[key].type === 'file') {
-                return <WikiFile title={child[key].title} slug={child[key].slug} />
+                return <WikiFile title={child[key].title} slug={child[key].slug} currentSlug={currentSlug} />
             } else {
-                return <Astro.self title={child[key].title} child={child[key].child} />
+                return <Astro.self title={child[key].title} child={child[key].child} currentSlug={currentSlug} />
             }
         })}
     </div>
 </div>
 
 <script>
-    const toggleDirectory = (title: Element) => {
-        const directoryContent = title.nextElementSibling;
-        const chevronRight = title.querySelector('.chevron-right');
-        const chevronDown = title.querySelector('.chevron-down');
+    const WIKI_DIRECTORY_STORAGE_KEY = 'wiki-directory-expanded-state';
+    
+    const getExpandedState = (): Record<string, boolean> => {
+        try {
+            const saved = localStorage.getItem(WIKI_DIRECTORY_STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        } catch {
+            return {};
+        }
+    };
+    
+    const saveExpandedState = (directoryName: string, isExpanded: boolean) => {
+        try {
+            const currentState = getExpandedState();
+            currentState[directoryName] = isExpanded;
+            localStorage.setItem(WIKI_DIRECTORY_STORAGE_KEY, JSON.stringify(currentState));
+        } catch {
+            // Ignore localStorage errors
+        }
+    };
+    
+    const toggleDirectory = (button: Element) => {
+        const directoryContent = button.nextElementSibling;
+        const chevronRight = button.querySelector('.chevron-right');
+        const chevronDown = button.querySelector('.chevron-down');
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        const directoryName = button.closest('[data-directory-name]')?.getAttribute('data-directory-name');
 
-        if (directoryContent!.classList.contains('hidden')) {
+        const newExpandedState = !isExpanded;
+        
+        if (newExpandedState) {
             directoryContent!.classList.remove('hidden');
             chevronRight!.classList.add('hidden');
             chevronDown!.classList.remove('hidden');
+            button.setAttribute('aria-expanded', 'true');
         } else {
             directoryContent!.classList.add('hidden');
             chevronRight!.classList.remove('hidden');
             chevronDown!.classList.add('hidden');
+            button.setAttribute('aria-expanded', 'false');
         }
-    }
+        
+        if (directoryName) {
+            saveExpandedState(directoryName, newExpandedState);
+        }
+    };
+    
+    const initializeDirectoryState = (button: Element) => {
+        const directoryContent = button.nextElementSibling;
+        const chevronRight = button.querySelector('.chevron-right');
+        const chevronDown = button.querySelector('.chevron-down');
+        const directoryName = button.closest('[data-directory-name]')?.getAttribute('data-directory-name');
+        const shouldExpand = button.getAttribute('data-should-expand') === 'true';
+        
+        // Check localStorage first, then fall back to shouldExpand
+        const expandedState = getExpandedState();
+        const isExpanded = directoryName && expandedState.hasOwnProperty(directoryName) 
+            ? expandedState[directoryName] 
+            : shouldExpand;
+        
+        if (isExpanded) {
+            directoryContent!.classList.remove('hidden');
+            chevronRight!.classList.add('hidden');
+            chevronDown!.classList.remove('hidden');
+            button.setAttribute('aria-expanded', 'true');
+        } else {
+            directoryContent!.classList.add('hidden');
+            chevronRight!.classList.remove('hidden');
+            chevronDown!.classList.add('hidden');
+            button.setAttribute('aria-expanded', 'false');
+        }
+    };
 
     document.addEventListener('astro:page-load', () => {
-        document.querySelectorAll('.wiki-directory-title').forEach(title => {
-            title.addEventListener('click', () => {
-                toggleDirectory(title);
+        document.querySelectorAll('.wiki-directory-title').forEach(button => {
+            // Initialize state based on localStorage and server-side logic
+            initializeDirectoryState(button);
+            
+            // Add click event listener
+            button.addEventListener('click', () => {
+                toggleDirectory(button);
             });
         });
     });

@@ -1,7 +1,7 @@
 ---
-import Wiki from '../../layouts/Wiki.astro'
-import Content from '../../components/Content.astro'
 import { getCollection, type CollectionEntry } from 'astro:content';
+import Content from '../../components/Content.astro';
+import Wiki from '../../layouts/Wiki.astro';
 
 export async function getStaticPaths() {
     const wikis = await getCollection('wiki');
@@ -11,18 +11,26 @@ export async function getStaticPaths() {
     }));
 }
 
-type Props = CollectionEntry<'wiki'>;
-const wiki = Astro.props.wiki;
+type Props = {wiki: CollectionEntry<'wiki'>};
+const {wiki} = Astro.props;
 const { Content: RenderedContent } = await wiki.render();
+
+const description = `Technical notes and learnings about ${wiki.data.title}. Part of Akbar Ramadhan's knowledge base on backend engineering and DevOps practices.`;
 ---
 
-<Wiki title={wiki.data.title}>
+<Wiki 
+    title={`${wiki.data.title} | Wiki`}
+    description={description}
+    publishedTime={wiki.data.date.toISOString()}
+    tags={wiki.data.tags}
+    currentSlug={wiki.slug}
+>
     <Content 
         title={wiki.data.title} 
         date={new Date(wiki.data.date)} 
         tags={wiki.data.tags} 
         type="wiki" 
-        proseSize="md">
+        proseSize="sm">
             <RenderedContent />
     </Content>
 </Wiki>

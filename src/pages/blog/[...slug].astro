@@ -1,10 +1,8 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import Content from '../../components/Content.astro';
-import Tag from '../../components/Tag.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import getReadingTime from 'reading-time';
+import Content from '../../components/Content.astro';
+import Layout from '../../layouts/Layout.astro';
 
 export async function getStaticPaths() {
     const posts = await getCollection('bits');
@@ -14,12 +12,22 @@ export async function getStaticPaths() {
     }));
 }
 
-type Props = CollectionEntry<'bits'>;
-const post = Astro.props.post;
+type Props = {post: CollectionEntry<'bits'>};
+const {post} = Astro.props;
 const { Content: RenderedContent } = await post.render();
 const readingTime = getReadingTime(post.body).minutes.toFixed(0);
+
+// Use excerpt or generate description
+const description = post.data.excerpt || `${post.data.title}. Insights and experiences from backend engineering and DevOps practices by Akbar Ramadhan.`;
 ---
-<Layout title={post.data.title}>
+
+<Layout 
+    title={`${post.data.title} | Blog`}
+    description={description}
+    type="article"
+    publishedTime={post.data.date}
+    tags={post.data.tags}
+>
     <Content 
         title={post.data.title} 
         date={new Date(post.data.date)} 

@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogPostPreview from '../../components/BlogPostPreview.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const posts = await getCollection('bits')
+---
+
+<Layout title="Bits - Akbar Ramadhan">
+    <main class="flex-1 py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <header class="text-center mb-16">
+                <h1 class="text-5xl font-bold mb-4 text-gray-50">Blog Posts</h1>
+                <!-- <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    Thoughts and experiences from building backend systems, DevOps practices, and cloud infrastructure
+                </p> -->
+            </header>
+            
+            <div class="space-y-8">
+                {posts.map((post: CollectionEntry<'bits'>) => (
+                    <BlogPostPreview post={post} />
+                ))}
+            </div>
+        </div>
+    </main>
+</Layout>
